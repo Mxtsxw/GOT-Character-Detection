@@ -4,14 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="91d986e8-5637-4d6f-9b9f-2011337a6b3d" name="Changes" comment="WIP">
-      <change afterPath="$PROJECT_DIR$/YuNet.net.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/models/face_detection_yunet_2023mar.onnx" afterDir="false" />
+    <list default="true" id="91d986e8-5637-4d6f-9b9f-2011337a6b3d" name="Changes" comment="YuNet WIP">
       <change afterPath="$PROJECT_DIR$/trailer1.mp4" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/utils.py" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/video.mp4" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sample.py" beforeDir="false" afterPath="$PROJECT_DIR$/sample.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/videoCapture.py" beforeDir="false" afterPath="$PROJECT_DIR$/videoCapture.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/YuNet.net.py" beforeDir="false" afterPath="$PROJECT_DIR$/YuNet.net.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -54,6 +52,7 @@
     "Python.Sample.executor": "Run",
     "Python.YuNet.executor": "Run",
     "Python.sample.executor": "Run",
+    "Python.utils.executor": "Run",
     "Python.videoCapture.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
@@ -143,6 +142,27 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="utils" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
+      <module name="CharacterDetection" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="SDK_NAME" value="MLSandbox" />
+      <option name="WORKING_DIRECTORY" value="C:\Users\randr\OneDrive\Bureau\POLYTECH 5A\S9\Apprentissage Profond\Partie 3\Projet\CharacterDetection" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/utils.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="true" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <configuration name="videoCapture" type="PythonConfigurationType" factoryName="Python">
       <module name="CharacterDetection" />
       <option name="ENV_FILES" value="" />
@@ -168,6 +188,7 @@
       <item itemvalue="Python.sample" />
       <item itemvalue="Python.videoCapture" />
       <item itemvalue="Python.YuNet" />
+      <item itemvalue="Python.utils" />
     </list>
   </component>
   <component name="SharedIndexes">
@@ -192,7 +213,7 @@
       <workItem from="1730898217338" duration="10595000" />
       <workItem from="1730912358264" duration="1181000" />
       <workItem from="1730985999491" duration="35000" />
-      <workItem from="1731655234930" duration="4793000" />
+      <workItem from="1731655234930" duration="8413000" />
     </task>
     <task id="LOCAL-00001" summary="WIP">
       <option name="closed" value="true" />
@@ -202,7 +223,15 @@
       <option name="project" value="LOCAL" />
       <updated>1731655304925</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="YuNet WIP">
+      <option name="closed" value="true" />
+      <created>1731662656206</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1731662656206</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -210,6 +239,7 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="WIP" />
-    <option name="LAST_COMMIT_MESSAGE" value="WIP" />
+    <MESSAGE value="YuNet WIP" />
+    <option name="LAST_COMMIT_MESSAGE" value="YuNet WIP" />
   </component>
 </project>

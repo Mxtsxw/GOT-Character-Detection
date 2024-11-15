@@ -1,4 +1,7 @@
 import cv2
+import face_recognition
+import utils
+import numpy as np
 
 # Initialize YuNet Face Detector
 model_path = 'models/face_detection_yunet_2023mar.onnx'  # Path to your YuNet ONNX model
@@ -11,9 +14,12 @@ face_detector = cv2.FaceDetectorYN_create(
     top_k=5000
 )
 
+# Step 1: Load and Encode Known Faces
+known_face_encodings, known_face_names = utils.load_known_faces('data/')
+
 # Set up the video file path
 video_path = 'trailer1.mp4'  # Change this to your video file path
-cap = cv2.VideoCapture(video_path)
+cap = cv2.VideoCapture(0)
 
 # Check if the video file was successfully opened
 if not cap.isOpened():
@@ -45,17 +51,32 @@ while cap.isOpened():
     # Check if faces are detected
     if faces[1] is not None:
         for face in faces[1]:
-            # Extract bounding box coordinates
             bbox = face[:4].astype(int)
             x, y, w, h = bbox
 
-            # Draw bounding box around the face
-            cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
+            # Crop the detected face
+            face_image = frame[y:y + h, x:x + w]
 
-            # Optionally, draw the confidence score
-            confidence_score = face[-1]
-            cv2.putText(frame, f'Conf: {confidence_score:.2f}', (x, y - 10),
-                        cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+            # Convert face image to RGB for face_recognition
+            rgb_face = cv2.cvtColor(face_image, cv2.COLOR_BGR2RGB)
+
+            # Step 4: Encode the Detected Face
+            encodings = face_recognition.face_encodings(rgb_face)
+
+            name = "Unknown"
+            if encodings:
+                encoding = encodings[0]
+
+                # Step 5: Compare with Known Faces
+                distances = face_recognition.face_distance(known_face_encodings, encoding)
+                best_match_index = np.argmin(distances)
+
+                if distances[best_match_index] < 0.6:  # Set your threshold
+                    name = known_face_names[best_match_index]
+
+            # Step 6: Draw Bounding Box and Name
+            cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
+            cv2.putText(frame, name, (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 255, 0), 2)
 
     # Display the frame with face detections
     cv2.imshow('YuNet Face Detection', frame)
