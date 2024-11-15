@@ -8,6 +8,7 @@ FaceDetector = mp.tasks.vision.FaceDetector
 FaceDetectorOptions = mp.tasks.vision.FaceDetectorOptions
 FaceDetectorResult = mp.tasks.vision.FaceDetectorResult
 VisionRunningMode = mp.tasks.vision.RunningMode
+mp_drawing = mp.solutions.drawing_utils
 
 
 
@@ -16,16 +17,7 @@ VisionRunningMode = mp.tasks.vision.RunningMode
 # Create a face detector instance with the live stream mode:
 def print_result(result: FaceDetectorResult, output_image: mp.Image, timestamp_ms: int,frame):
     print('face detector result: {}'.format(result))
-    for detection in result.detections:
-        # Récupère les coordonnées de la boîte englobante
-        bbox = detection.bounding_box
-        x_min = int(bbox.origin_x)
-        y_min = int(bbox.origin_y)
-        width = int(bbox.width)
-        height = int(bbox.height)
 
-        # Dessine un rectangle autour du visage détecté
-        cv.rectangle(frame, (x_min, y_min), (x_min + width, y_min + height), (0, 255, 0), 2)
 
 options = FaceDetectorOptions(
     base_options=BaseOptions(model_asset_path='models/blaze_face_short_range.tflite'),
@@ -58,6 +50,11 @@ with FaceDetector.create_from_options(options) as detector:
         # Process the frame using detect_async
         mp_image = mp.Image(image_format=mp.ImageFormat.SRGB, data=frame)
         detection_result = detector.detect_async(mp_image, timestamp_ms)
+
+        # draw the face detection result on the frame
+        if detection_result:
+            for detection in detection_result.detections:
+                mp_drawing.draw_detection(frame, detection)
 
         # display the resulting frame
         cv.imshow('Face Detection', frame)
