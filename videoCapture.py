@@ -6,13 +6,13 @@ mp_face_detection = mp.solutions.face_detection
 mp_drawing = mp.solutions.drawing_utils
 
 # Set up the webcam and Face Detection
-cap = cv2.VideoCapture(0)
-with mp_face_detection.FaceDetection(model_selection=0, min_detection_confidence=0.5) as face_detection:
+cap = cv2.VideoCapture('trailer1.mp4')
+with mp_face_detection.FaceDetection(model_selection=2, min_detection_confidence=0.9) as face_detection:
     while cap.isOpened():
         ret, frame = cap.read()
  
         if not ret:
-            print("Failed to capture image")
+            print("End of video")
             break
 
         # Convert the image color from BGR to RGB for MediaPipe processing
@@ -24,6 +24,7 @@ with mp_face_detection.FaceDetection(model_selection=0, min_detection_confidence
         # Draw face detection bounding boxes
         if results.detections:
             for detection in results.detections:
+                print(detection)
                 # Draw the detection box using mediapipe drawing utilities
                 mp_drawing.draw_detection(frame, detection)
 
