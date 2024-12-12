@@ -60,16 +60,23 @@ def export_embeddings(folder_path, output_file):
     known_face_encodings = []
     known_face_names = []
 
-    for filename in os.listdir(folder_path):
-        if filename.endswith(('.jpg', '.jpeg', '.png')):
-            name = os.path.splitext(filename)[0]
-            img_path = os.path.join(folder_path, filename)
-            img = face_recognition.load_image_file(img_path)
-            encoding = face_recognition.face_encodings(img)
+    for subfolder_name in os.listdir(folder_path):
+        subfolder_path = os.path.join(folder_path, subfolder_name)
 
-            if encoding:
-                known_face_encodings.append(encoding[0])
-                known_face_names.append(name)
+        # Check if it's a directory
+        if os.path.isdir(subfolder_path):
+            for filename in os.listdir(subfolder_path):
+                if filename.endswith(('.jpg', '.jpeg', '.png')):
+                    name = subfolder_name  # Use parent folder name as the label
+                    img_path = os.path.join(subfolder_path, filename)
+
+                    # Load the image and encode it
+                    img = face_recognition.load_image_file(img_path)
+                    encoding = face_recognition.face_encodings(img)
+
+                    if encoding:
+                        known_face_encodings.append(encoding[0])
+                        known_face_names.append(name)
 
     # Save embeddings to a pickle file
     embeddings_data = {"encodings": known_face_encodings, "names": known_face_names}
@@ -77,7 +84,7 @@ def export_embeddings(folder_path, output_file):
         pickle.dump(embeddings_data, f)
         print(f"Embeddings and names saved to {output_file}")
 
-def detect_characters_yunet(img, face_detector, known_face_encodings, known_face_names):
+def detect_characters_yunet(img, face_detector, known_face_encodings, known_face_names, detection_threshold = 0.6):
 
     h, w, _ = img.shape
     face_detector.setInputSize((w, h))
@@ -107,7 +114,7 @@ def detect_characters_yunet(img, face_detector, known_face_encodings, known_face
                 distances = face_recognition.face_distance(known_face_encodings, encoding)
                 best_match_index = np.argmin(distances)
 
-                if distances[best_match_index] < 0.6:
+                if distances[best_match_index] < detection_threshold:
                     name = known_face_names[best_match_index]
 
             # Step 6: Draw Bounding Box and Name
@@ -145,7 +152,7 @@ def load_embeddings(filename):
 
 if __name__ == '__main__':
     folder_path = 'data'  # Replace with your folder path
-    output_file = 'embeddings/face_embeddings.pkl'
+    output_file = 'embeddings/face_embeddings_multiple.pkl'
     export_embeddings(folder_path, output_file)
     # known_face_encodings, known_face_names = load_embeddings(output_file)
     # print(known_face_encodings, known_face_names)

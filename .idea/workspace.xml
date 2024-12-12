@@ -5,17 +5,16 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="91d986e8-5637-4d6f-9b9f-2011337a6b3d" name="Changes" comment="Face recognition : Stage 1">
-      <change afterPath="$PROJECT_DIR$/notebook.ipynb" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/videos/trailer1.mp4" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/CharacterDetection.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/CharacterDetection.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/jupyter-settings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/jupyter-settings.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YuNet.net.py" beforeDir="false" afterPath="$PROJECT_DIR$/YuNet_video_processing.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/english.jpg" beforeDir="false" afterPath="$PROJECT_DIR$/data/Johnny English.jpg" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/blaze_face_short_range.tflite" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/YuNet_video_processing.py" beforeDir="false" afterPath="$PROJECT_DIR$/YuNet_video_processing.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/Johnny English.jpg" beforeDir="false" afterPath="$PROJECT_DIR$/data/Johnny English/Johnny English.jpg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/embeddings/face_embeddings.pkl" beforeDir="false" afterPath="$PROJECT_DIR$/embeddings/face_embeddings_unique.pkl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/notebook.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/notebook.ipynb" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sample.ipynb" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/sample.py" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/videoCapture.py" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -78,18 +77,22 @@
       <recent name="C:\Users\randr\OneDrive\Bureau\POLYTECH 5A\S9\Apprentissage Profond\Partie 3\Projet\CharacterDetection" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\randr\OneDrive\Bureau\POLYTECH 5A\S9\Apprentissage Profond\Partie 3\Projet\CharacterDetection\data\Johnny English" />
       <recent name="C:\Users\randr\OneDrive\Bureau\POLYTECH 5A\S9\Apprentissage Profond\Partie 3\Projet\CharacterDetection\embeddings" />
       <recent name="C:\Users\randr\OneDrive\Bureau\POLYTECH 5A\S9\Apprentissage Profond\Partie 3\Projet\CharacterDetection\videos" />
       <recent name="C:\Users\randr\OneDrive\Bureau\POLYTECH 5A\S9\Apprentissage Profond\Partie 3\Projet\CharacterDetection\models" />
       <recent name="C:\Users\randr\OneDrive\Bureau\POLYTECH 5A\S9\Apprentissage Profond\Partie 3\Projet\CharacterDetection" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.YuNet">
+  <component name="RunManager" selected="Python.utils">
     <configuration name="YuNet" type="PythonConfigurationType" factoryName="Python">
       <module name="CharacterDetection" />
       <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
       <option name="SDK_HOME" value="" />
       <option name="SDK_NAME" value="MLSandbox" />
       <option name="WORKING_DIRECTORY" value="C:\Users\randr\OneDrive\Bureau\POLYTECH 5A\S9\Apprentissage Profond\Partie 3\Projet\CharacterDetection" />
@@ -234,7 +237,12 @@
       <workItem from="1733391025726" duration="16000" />
       <workItem from="1733576483576" duration="2864000" />
       <workItem from="1733591453317" duration="4073000" />
-      <workItem from="1733658858486" duration="10155000" />
+      <workItem from="1733658858486" duration="12178000" />
+      <workItem from="1733867374391" duration="33000" />
+      <workItem from="1733909685538" duration="3056000" />
+      <workItem from="1734033160496" duration="367000" />
+      <workItem from="1734033559122" duration="126000" />
+      <workItem from="1734033713734" duration="4805000" />
     </task>
     <task id="LOCAL-00001" summary="WIP">
       <option name="closed" value="true" />
