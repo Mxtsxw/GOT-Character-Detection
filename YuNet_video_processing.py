@@ -16,11 +16,11 @@ face_detector = cv2.FaceDetectorYN_create(
 )
 
 # Step 1: Load and Encode Known Faces
-known_face_encodings, known_face_names = utils.load_embeddings('embeddings/face_embeddings.pkl')
+known_face_encodings, known_face_names = utils.load_embeddings('embeddings/face_embeddings_multiple.pkl')
 
 # Set up the video file path
 video_input_path = "./videos/trailer1.mp4" # first arg
-video_output_path = "./videos/trailer1_process.mp4" # Second arg
+video_output_path = "./videos/trailer1_process3.mp4" # Second arg
 
 cap = cv2.VideoCapture(video_input_path)
 
@@ -74,7 +74,7 @@ while cap.isOpened():
                 distances = face_recognition.face_distance(known_face_encodings, encoding)
                 best_match_index = np.argmin(distances)
 
-                if distances[best_match_index] < 0.6:
+                if distances[best_match_index] < 0.8:
                     name = known_face_names[best_match_index]
 
 
