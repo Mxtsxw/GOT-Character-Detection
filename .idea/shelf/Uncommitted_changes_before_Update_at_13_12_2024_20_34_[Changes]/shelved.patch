@@ -1,0 +1,198 @@
+Index: utils.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>import os\r\nimport pickle\r\nimport face_recognition\r\nimport cv2\r\nimport numpy as np\r\n\r\n\r\ndef detect_faces_mediapipe(image, face_detection):\r\n    \"\"\"\r\n    Function to perform face detection with MediaPipe\r\n    \"\"\"\r\n\r\n    # Convert image to RGB for MediaPipe processing\r\n    rgb_image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)\r\n\r\n    # Process the image\r\n    results = face_detection.process(rgb_image)\r\n\r\n    # Draw bounding boxes\r\n    if results.detections:\r\n        for detection in results.detections:\r\n            bboxC = detection.location_data.relative_bounding_box\r\n            ih, iw, _ = image.shape\r\n            x = int(bboxC.xmin * iw)\r\n            y = int(bboxC.ymin * ih)\r\n            w = int(bboxC.width * iw)\r\n            h = int(bboxC.height * ih)\r\n            cv2.rectangle(image, (x, y), (x + w, y + h), (0, 255, 0), 2)\r\n\r\n    return image\r\n\r\n\r\ndef detect_faces_yunet(image, face_detector):\r\n    \"\"\"\r\n    Function to perform face detection with YuNet\r\n    \"\"\"\r\n\r\n    # Update YuNet input size to match image\r\n    h, w, _ = image.shape\r\n    face_detector.setInputSize((w, h))\r\n\r\n    # Perform detection\r\n    faces = face_detector.detect(image)\r\n\r\n    # Draw bounding boxes\r\n    if faces[1] is not None:\r\n        for face in faces[1]:\r\n            bbox = face[:4].astype(int)\r\n            x, y, w, h = bbox\r\n            cv2.rectangle(image, (x, y), (x + w, y + h), (0, 255, 0), 2)\r\n\r\n    return image\r\n\r\n\r\ndef export_embeddings(folder_path, output_file):\r\n    \"\"\"\r\n    Export the embeddings\r\n    \"\"\"\r\n\r\n    known_face_encodings = []\r\n    known_face_names = []\r\n\r\n    for filename in os.listdir(folder_path):\r\n        if filename.endswith(('.jpg', '.jpeg', '.png')):\r\n            name = os.path.splitext(filename)[0]\r\n            img_path = os.path.join(folder_path, filename)\r\n            img = face_recognition.load_image_file(img_path)\r\n            encoding = face_recognition.face_encodings(img)\r\n\r\n            if encoding:\r\n                known_face_encodings.append(encoding[0])\r\n                known_face_names.append(name)\r\n\r\n    # Save embeddings to a pickle file\r\n    embeddings_data = {\"encodings\": known_face_encodings, \"names\": known_face_names}\r\n    with open(output_file, 'wb') as f:\r\n        pickle.dump(embeddings_data, f)\r\n        print(f\"Embeddings and names saved to {output_file}\")\r\n\r\ndef detect_characters_yunet(img, face_detector, known_face_encodings, known_face_names):\r\n\r\n    h, w, _ = img.shape\r\n    face_detector.setInputSize((w, h))\r\n\r\n    # Perform face detection using YuNet\r\n    faces = face_detector.detect(img)\r\n\r\n    # Check if faces are detected\r\n    if faces[1] is not None:\r\n        for face in faces[1]:\r\n            bbox = face[:4].astype(int)\r\n            x, y, w, h = bbox\r\n\r\n            # Crop the detected face\r\n            face_image = img[y:y + h, x:x + w]\r\n\r\n            # Convert face image to RGB for face_recognition\r\n            rgb_face = cv2.cvtColor(face_image, cv2.COLOR_BGR2RGB)\r\n\r\n            # Step 4: Encode the Detected Face\r\n            encodings = get_embedding(rgb_face)\r\n            name = \"Unknown\"\r\n            if encodings:\r\n                encoding = encodings[0]\r\n\r\n                # Step 5: Compare with Known Faces\r\n                distances = face_recognition.face_distance(known_face_encodings, encoding)\r\n                best_match_index = np.argmin(distances)\r\n\r\n                if distances[best_match_index] < 0.6:\r\n                    name = known_face_names[best_match_index]\r\n\r\n            # Step 6: Draw Bounding Box and Name\r\n            cv2.rectangle(img, (x, y), (x + w, y + h), (0, 255, 0), 2)\r\n            cv2.putText(img, name, (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 255, 0), 2)\r\n\r\n    return img\r\n\r\ndef get_embedding(img):\r\n    \"\"\"\r\n    Extract the face embedding from an input image.\r\n    \"\"\"\r\n    face_encodings = face_recognition.face_encodings(img)\r\n    if face_encodings:\r\n        return face_encodings\r\n\r\n    return None\r\n\r\ndef load_embeddings(filename):\r\n    \"\"\"\r\n    Load face embeddings and names from a pickle file.\r\n\r\n    Parameters:\r\n    - filename: Path to the pickle file containing the embeddings.\r\n    \"\"\"\r\n    with open(filename, 'rb') as f:\r\n        data = pickle.load(f)\r\n\r\n    known_face_encodings = data.get(\"encodings\", [])\r\n    known_face_names = data.get(\"names\", [])\r\n\r\n    print(f\"Successfully loaded {len(known_face_encodings)} embeddings from {filename}\")\r\n    return known_face_encodings, known_face_names\r\n\r\n\r\nif __name__ == '__main__':\r\n    folder_path = 'data'  # Replace with your folder path\r\n    output_file = 'embeddings/face_embeddings.pkl'\r\n    export_embeddings(folder_path, output_file)\r\n    # known_face_encodings, known_face_names = load_embeddings(output_file)\r\n    # print(known_face_encodings, known_face_names)
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/utils.py b/utils.py
+--- a/utils.py	(revision fb54cbb63defbfb41960f1e081a1c13709321398)
++++ b/utils.py	(date 1733914583444)
+@@ -118,7 +118,7 @@
+ 
+ def get_embedding(img):
+     """
+-    Extract the face embedding from an input image.
++    Get the face embedding from an input image.
+     """
+     face_encodings = face_recognition.face_encodings(img)
+     if face_encodings:
+Index: .idea/CharacterDetection.iml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<module type=\"PYTHON_MODULE\" version=\"4\">\r\n  <component name=\"NewModuleRootManager\">\r\n    <content url=\"file://$MODULE_DIR$\">\r\n      <excludeFolder url=\"file://$MODULE_DIR$/models\" />\r\n    </content>\r\n    <orderEntry type=\"inheritedJdk\" />\r\n    <orderEntry type=\"sourceFolder\" forTests=\"false\" />\r\n  </component>\r\n</module>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/CharacterDetection.iml b/.idea/CharacterDetection.iml
+--- a/.idea/CharacterDetection.iml	(revision fb54cbb63defbfb41960f1e081a1c13709321398)
++++ b/.idea/CharacterDetection.iml	(date 1733910889430)
+@@ -4,7 +4,7 @@
+     <content url="file://$MODULE_DIR$">
+       <excludeFolder url="file://$MODULE_DIR$/models" />
+     </content>
+-    <orderEntry type="inheritedJdk" />
++    <orderEntry type="jdk" jdkName="tpdeeprl2024" jdkType="Python SDK" />
+     <orderEntry type="sourceFolder" forTests="false" />
+   </component>
+ </module>
+\ No newline at end of file
+Index: .idea/workspace.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<project version=\"4\">\r\n  <component name=\"AutoImportSettings\">\r\n    <option name=\"autoReloadType\" value=\"SELECTIVE\" />\r\n  </component>\r\n  <component name=\"ChangeListManager\">\r\n    <list default=\"true\" id=\"91d986e8-5637-4d6f-9b9f-2011337a6b3d\" name=\"Changes\" comment=\"Face recognition : Stage 1\">\r\n      <change afterPath=\"$PROJECT_DIR$/notebook.ipynb\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/videos/trailer1.mp4\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/.idea/workspace.xml\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/.idea/workspace.xml\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/YuNet.net.py\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/YuNet_video_processing.py\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/data/english.jpg\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/data/Johnny English.jpg\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/models/blaze_face_short_range.tflite\" beforeDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/requirements.txt\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/requirements.txt\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/sample.ipynb\" beforeDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/sample.py\" beforeDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/utils.py\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/utils.py\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/videoCapture.py\" beforeDir=\"false\" />\r\n    </list>\r\n    <option name=\"SHOW_DIALOG\" value=\"false\" />\r\n    <option name=\"HIGHLIGHT_CONFLICTS\" value=\"true\" />\r\n    <option name=\"HIGHLIGHT_NON_ACTIVE_CHANGELIST\" value=\"false\" />\r\n    <option name=\"LAST_RESOLUTION\" value=\"IGNORE\" />\r\n  </component>\r\n  <component name=\"FileTemplateManagerImpl\">\r\n    <option name=\"RECENT_TEMPLATES\">\r\n      <list>\r\n        <option value=\"Python Script\" />\r\n      </list>\r\n    </option>\r\n  </component>\r\n  <component name=\"Git.Settings\">\r\n    <option name=\"RECENT_GIT_ROOT_PATH\" value=\"$PROJECT_DIR$\" />\r\n  </component>\r\n  <component name=\"GitHubPullRequestSearchHistory\">{\r\n  &quot;lastFilter&quot;: {\r\n    &quot;state&quot;: &quot;OPEN&quot;,\r\n    &quot;assignee&quot;: &quot;Mxtsxw&quot;\r\n  }\r\n}</component>\r\n  <component name=\"GithubPullRequestsUISettings\">{\r\n  &quot;selectedUrlAndAccountId&quot;: {\r\n    &quot;url&quot;: &quot;https://github.com/Mxtsxw/GOT-Character-Detection.git&quot;,\r\n    &quot;accountId&quot;: &quot;c55243d4-c2d8-4565-84fd-3e6e75130daf&quot;\r\n  }\r\n}</component>\r\n  <component name=\"ProjectColorInfo\">{\r\n  &quot;associatedIndex&quot;: 1\r\n}</component>\r\n  <component name=\"ProjectId\" id=\"2nqTOlFrOcjvlPB62QmqhbFioez\" />\r\n  <component name=\"ProjectLevelVcsManager\" settingsEditedManually=\"true\" />\r\n  <component name=\"ProjectViewState\">\r\n    <option name=\"hideEmptyMiddlePackages\" value=\"true\" />\r\n    <option name=\"showLibraryContents\" value=\"true\" />\r\n  </component>\r\n  <component name=\"PropertiesComponent\">{\r\n  &quot;keyToString&quot;: {\r\n    &quot;Python.Sample.executor&quot;: &quot;Run&quot;,\r\n    &quot;Python.YuNet.executor&quot;: &quot;Run&quot;,\r\n    &quot;Python.sample.executor&quot;: &quot;Run&quot;,\r\n    &quot;Python.utils.executor&quot;: &quot;Run&quot;,\r\n    &quot;Python.videoCapture.executor&quot;: &quot;Run&quot;,\r\n    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,\r\n    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,\r\n    &quot;git-widget-placeholder&quot;: &quot;main&quot;,\r\n    &quot;last_opened_file_path&quot;: &quot;C:/Users/randr/OneDrive/Bureau/POLYTECH 5A/S9/M2IA/LLM/TP1&quot;,\r\n    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,\r\n    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,\r\n    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,\r\n    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,\r\n    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,\r\n    &quot;settings.editor.selected.configurable&quot;: &quot;org.jetbrains.plugins.notebooks.jupyter.connections.configuration.JupyterServerConfigurable&quot;,\r\n    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;\r\n  }\r\n}</component>\r\n  <component name=\"RecentsManager\">\r\n    <key name=\"CopyFile.RECENT_KEYS\">\r\n      <recent name=\"C:\\Users\\randr\\OneDrive\\Bureau\\POLYTECH 5A\\S9\\Apprentissage Profond\\Partie 3\\Projet\\CharacterDetection\" />\r\n    </key>\r\n    <key name=\"MoveFile.RECENT_KEYS\">\r\n      <recent name=\"C:\\Users\\randr\\OneDrive\\Bureau\\POLYTECH 5A\\S9\\Apprentissage Profond\\Partie 3\\Projet\\CharacterDetection\\embeddings\" />\r\n      <recent name=\"C:\\Users\\randr\\OneDrive\\Bureau\\POLYTECH 5A\\S9\\Apprentissage Profond\\Partie 3\\Projet\\CharacterDetection\\videos\" />\r\n      <recent name=\"C:\\Users\\randr\\OneDrive\\Bureau\\POLYTECH 5A\\S9\\Apprentissage Profond\\Partie 3\\Projet\\CharacterDetection\\models\" />\r\n      <recent name=\"C:\\Users\\randr\\OneDrive\\Bureau\\POLYTECH 5A\\S9\\Apprentissage Profond\\Partie 3\\Projet\\CharacterDetection\" />\r\n    </key>\r\n  </component>\r\n  <component name=\"RunManager\" selected=\"Python.YuNet\">\r\n    <configuration name=\"YuNet\" type=\"PythonConfigurationType\" factoryName=\"Python\">\r\n      <module name=\"CharacterDetection\" />\r\n      <option name=\"ENV_FILES\" value=\"\" />\r\n      <option name=\"INTERPRETER_OPTIONS\" value=\"\" />\r\n      <option name=\"PARENT_ENVS\" value=\"true\" />\r\n      <option name=\"SDK_HOME\" value=\"\" />\r\n      <option name=\"SDK_NAME\" value=\"MLSandbox\" />\r\n      <option name=\"WORKING_DIRECTORY\" value=\"C:\\Users\\randr\\OneDrive\\Bureau\\POLYTECH 5A\\S9\\Apprentissage Profond\\Partie 3\\Projet\\CharacterDetection\" />\r\n      <option name=\"IS_MODULE_SDK\" value=\"false\" />\r\n      <option name=\"ADD_CONTENT_ROOTS\" value=\"true\" />\r\n      <option name=\"ADD_SOURCE_ROOTS\" value=\"true\" />\r\n      <EXTENSION ID=\"PythonCoverageRunConfigurationExtension\" runner=\"coverage.py\" />\r\n      <option name=\"SCRIPT_NAME\" value=\"C:\\Users\\randr\\OneDrive\\Bureau\\POLYTECH 5A\\S9\\Apprentissage Profond\\Partie 3\\Projet\\CharacterDetection\\YuNet_video_processing.py\" />\r\n      <option name=\"PARAMETERS\" value=\"\" />\r\n      <option name=\"SHOW_COMMAND_LINE\" value=\"true\" />\r\n      <option name=\"EMULATE_TERMINAL\" value=\"false\" />\r\n      <option name=\"MODULE_MODE\" value=\"false\" />\r\n      <option name=\"REDIRECT_INPUT\" value=\"false\" />\r\n      <option name=\"INPUT_FILE\" value=\"\" />\r\n      <method v=\"2\" />\r\n    </configuration>\r\n    <configuration default=\"true\" type=\"PythonConfigurationType\" factoryName=\"Python\">\r\n      <module name=\"CharacterDetection\" />\r\n      <option name=\"ENV_FILES\" value=\"\" />\r\n      <option name=\"INTERPRETER_OPTIONS\" value=\"\" />\r\n      <option name=\"PARENT_ENVS\" value=\"true\" />\r\n      <envs>\r\n        <env name=\"PYTHONUNBUFFERED\" value=\"1\" />\r\n      </envs>\r\n      <option name=\"SDK_HOME\" value=\"\" />\r\n      <option name=\"WORKING_DIRECTORY\" value=\"\" />\r\n      <option name=\"IS_MODULE_SDK\" value=\"false\" />\r\n      <option name=\"ADD_CONTENT_ROOTS\" value=\"true\" />\r\n      <option name=\"ADD_SOURCE_ROOTS\" value=\"true\" />\r\n      <EXTENSION ID=\"PythonCoverageRunConfigurationExtension\" runner=\"coverage.py\" />\r\n      <option name=\"SCRIPT_NAME\" value=\"\" />\r\n      <option name=\"PARAMETERS\" value=\"\" />\r\n      <option name=\"SHOW_COMMAND_LINE\" value=\"true\" />\r\n      <option name=\"EMULATE_TERMINAL\" value=\"false\" />\r\n      <option name=\"MODULE_MODE\" value=\"false\" />\r\n      <option name=\"REDIRECT_INPUT\" value=\"false\" />\r\n      <option name=\"INPUT_FILE\" value=\"\" />\r\n      <method v=\"2\" />\r\n    </configuration>\r\n    <configuration name=\"sample\" type=\"PythonConfigurationType\" factoryName=\"Python\" nameIsGenerated=\"true\">\r\n      <module name=\"CharacterDetection\" />\r\n      <option name=\"ENV_FILES\" value=\"\" />\r\n      <option name=\"INTERPRETER_OPTIONS\" value=\"\" />\r\n      <option name=\"PARENT_ENVS\" value=\"true\" />\r\n      <envs>\r\n        <env name=\"PYTHONUNBUFFERED\" value=\"1\" />\r\n      </envs>\r\n      <option name=\"SDK_HOME\" value=\"\" />\r\n      <option name=\"SDK_NAME\" value=\"MLSandbox\" />\r\n      <option name=\"WORKING_DIRECTORY\" value=\"C:\\Users\\randr\\OneDrive\\Bureau\\POLYTECH 5A\\S9\\Apprentissage Profond\\Partie 3\\Projet\\CharacterDetection\" />\r\n      <option name=\"IS_MODULE_SDK\" value=\"false\" />\r\n      <option name=\"ADD_CONTENT_ROOTS\" value=\"true\" />\r\n      <option name=\"ADD_SOURCE_ROOTS\" value=\"true\" />\r\n      <EXTENSION ID=\"PythonCoverageRunConfigurationExtension\" runner=\"coverage.py\" />\r\n      <option name=\"SCRIPT_NAME\" value=\"sample.py\" />\r\n      <option name=\"PARAMETERS\" value=\"\" />\r\n      <option name=\"SHOW_COMMAND_LINE\" value=\"true\" />\r\n      <option name=\"EMULATE_TERMINAL\" value=\"false\" />\r\n      <option name=\"MODULE_MODE\" value=\"false\" />\r\n      <option name=\"REDIRECT_INPUT\" value=\"false\" />\r\n      <option name=\"INPUT_FILE\" value=\"\" />\r\n      <method v=\"2\" />\r\n    </configuration>\r\n    <configuration name=\"utils\" type=\"PythonConfigurationType\" factoryName=\"Python\" nameIsGenerated=\"true\">\r\n      <module name=\"CharacterDetection\" />\r\n      <option name=\"ENV_FILES\" value=\"\" />\r\n      <option name=\"INTERPRETER_OPTIONS\" value=\"\" />\r\n      <option name=\"PARENT_ENVS\" value=\"true\" />\r\n      <option name=\"SDK_HOME\" value=\"\" />\r\n      <option name=\"SDK_NAME\" value=\"MLSandbox\" />\r\n      <option name=\"WORKING_DIRECTORY\" value=\"C:\\Users\\randr\\OneDrive\\Bureau\\POLYTECH 5A\\S9\\Apprentissage Profond\\Partie 3\\Projet\\CharacterDetection\" />\r\n      <option name=\"IS_MODULE_SDK\" value=\"false\" />\r\n      <option name=\"ADD_CONTENT_ROOTS\" value=\"true\" />\r\n      <option name=\"ADD_SOURCE_ROOTS\" value=\"true\" />\r\n      <EXTENSION ID=\"PythonCoverageRunConfigurationExtension\" runner=\"coverage.py\" />\r\n      <option name=\"SCRIPT_NAME\" value=\"$PROJECT_DIR$/utils.py\" />\r\n      <option name=\"PARAMETERS\" value=\"\" />\r\n      <option name=\"SHOW_COMMAND_LINE\" value=\"true\" />\r\n      <option name=\"EMULATE_TERMINAL\" value=\"false\" />\r\n      <option name=\"MODULE_MODE\" value=\"false\" />\r\n      <option name=\"REDIRECT_INPUT\" value=\"false\" />\r\n      <option name=\"INPUT_FILE\" value=\"\" />\r\n      <method v=\"2\" />\r\n    </configuration>\r\n    <configuration name=\"videoCapture\" type=\"PythonConfigurationType\" factoryName=\"Python\">\r\n      <module name=\"CharacterDetection\" />\r\n      <option name=\"ENV_FILES\" value=\"\" />\r\n      <option name=\"INTERPRETER_OPTIONS\" value=\"\" />\r\n      <option name=\"PARENT_ENVS\" value=\"true\" />\r\n      <envs>\r\n        <env name=\"PYTHONUNBUFFERED\" value=\"1\" />\r\n      </envs>\r\n      <option name=\"SDK_HOME\" value=\"\" />\r\n      <option name=\"SDK_NAME\" value=\"MLSandbox\" />\r\n      <option name=\"WORKING_DIRECTORY\" value=\"C:\\Users\\randr\\OneDrive\\Bureau\\POLYTECH 5A\\S9\\Apprentissage Profond\\Partie 3\\Projet\\CharacterDetection\" />\r\n      <option name=\"IS_MODULE_SDK\" value=\"false\" />\r\n      <option name=\"ADD_CONTENT_ROOTS\" value=\"true\" />\r\n      <option name=\"ADD_SOURCE_ROOTS\" value=\"true\" />\r\n      <EXTENSION ID=\"PythonCoverageRunConfigurationExtension\" runner=\"coverage.py\" />\r\n      <option name=\"SCRIPT_NAME\" value=\"videoCapture.py\" />\r\n      <option name=\"PARAMETERS\" value=\"\" />\r\n      <option name=\"SHOW_COMMAND_LINE\" value=\"true\" />\r\n      <option name=\"EMULATE_TERMINAL\" value=\"false\" />\r\n      <option name=\"MODULE_MODE\" value=\"false\" />\r\n      <option name=\"REDIRECT_INPUT\" value=\"false\" />\r\n      <option name=\"INPUT_FILE\" value=\"\" />\r\n      <method v=\"2\" />\r\n    </configuration>\r\n    <list>\r\n      <item itemvalue=\"Python.YuNet\" />\r\n      <item itemvalue=\"Python.sample\" />\r\n      <item itemvalue=\"Python.utils\" />\r\n      <item itemvalue=\"Python.videoCapture\" />\r\n    </list>\r\n  </component>\r\n  <component name=\"SharedIndexes\">\r\n    <attachedChunks>\r\n      <set>\r\n        <option value=\"bundled-js-predefined-d6986cc7102b-7c0b70fcd90d-JavaScript-PY-242.21829.153\" />\r\n        <option value=\"bundled-python-sdk-464836ebc622-b74155a9e76b-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-242.21829.153\" />\r\n      </set>\r\n    </attachedChunks>\r\n  </component>\r\n  <component name=\"SpellCheckerSettings\" RuntimeDictionaries=\"0\" Folders=\"0\" CustomDictionaries=\"0\" DefaultDictionary=\"application-level\" UseSingleDictionary=\"true\" transferred=\"true\" />\r\n  <component name=\"TaskManager\">\r\n    <task active=\"true\" id=\"Default\" summary=\"Default task\">\r\n      <changelist id=\"91d986e8-5637-4d6f-9b9f-2011337a6b3d\" name=\"Changes\" comment=\"\" />\r\n      <created>1729699576617</created>\r\n      <option name=\"number\" value=\"Default\" />\r\n      <option name=\"presentableId\" value=\"Default\" />\r\n      <updated>1729699576617</updated>\r\n      <workItem from=\"1729699577773\" duration=\"6308000\" />\r\n      <workItem from=\"1729758750466\" duration=\"90000\" />\r\n      <workItem from=\"1729770919676\" duration=\"21000\" />\r\n      <workItem from=\"1730898217338\" duration=\"10595000\" />\r\n      <workItem from=\"1730912358264\" duration=\"1181000\" />\r\n      <workItem from=\"1730985999491\" duration=\"35000\" />\r\n      <workItem from=\"1731655234930\" duration=\"10714000\" />\r\n      <workItem from=\"1731688416038\" duration=\"11011000\" />\r\n      <workItem from=\"1732801678838\" duration=\"1193000\" />\r\n      <workItem from=\"1733151735514\" duration=\"2593000\" />\r\n      <workItem from=\"1733391025726\" duration=\"16000\" />\r\n      <workItem from=\"1733576483576\" duration=\"2864000\" />\r\n      <workItem from=\"1733591453317\" duration=\"4073000\" />\r\n      <workItem from=\"1733658858486\" duration=\"10155000\" />\r\n    </task>\r\n    <task id=\"LOCAL-00001\" summary=\"WIP\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1731655304925</created>\r\n      <option name=\"number\" value=\"00001\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00001\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1731655304925</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00002\" summary=\"YuNet WIP\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1731662656206</created>\r\n      <option name=\"number\" value=\"00002\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00002\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1731662656206</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00003\" summary=\"Face recognition : Stage 1\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1731666824368</created>\r\n      <option name=\"number\" value=\"00003\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00003\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1731666824368</updated>\r\n    </task>\r\n    <option name=\"localTasksCounter\" value=\"4\" />\r\n    <servers />\r\n  </component>\r\n  <component name=\"TypeScriptGeneratedFilesManager\">\r\n    <option name=\"version\" value=\"3\" />\r\n  </component>\r\n  <component name=\"VcsManagerConfiguration\">\r\n    <MESSAGE value=\"WIP\" />\r\n    <MESSAGE value=\"YuNet WIP\" />\r\n    <MESSAGE value=\"Face recognition : Stage 1\" />\r\n    <option name=\"LAST_COMMIT_MESSAGE\" value=\"Face recognition : Stage 1\" />\r\n  </component>\r\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/workspace.xml b/.idea/workspace.xml
+--- a/.idea/workspace.xml	(revision fb54cbb63defbfb41960f1e081a1c13709321398)
++++ b/.idea/workspace.xml	(date 1734118454632)
+@@ -4,18 +4,13 @@
+     <option name="autoReloadType" value="SELECTIVE" />
+   </component>
+   <component name="ChangeListManager">
+-    <list default="true" id="91d986e8-5637-4d6f-9b9f-2011337a6b3d" name="Changes" comment="Face recognition : Stage 1">
+-      <change afterPath="$PROJECT_DIR$/notebook.ipynb" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/videos/trailer1.mp4" afterDir="false" />
++    <list default="true" id="91d986e8-5637-4d6f-9b9f-2011337a6b3d" name="Changes" comment="test1">
++      <change beforePath="$PROJECT_DIR$/.idea/CharacterDetection.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/CharacterDetection.iml" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/YuNet.net.py" beforeDir="false" afterPath="$PROJECT_DIR$/YuNet_video_processing.py" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/data/english.jpg" beforeDir="false" afterPath="$PROJECT_DIR$/data/Johnny English.jpg" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/models/blaze_face_short_range.tflite" beforeDir="false" />
+-      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/sample.ipynb" beforeDir="false" />
+-      <change beforePath="$PROJECT_DIR$/sample.py" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/data/Johnny English.jpg" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/notebook.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/notebook.ipynb" afterDir="false" />
+       <change beforePath="$PROJECT_DIR$/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils.py" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/videoCapture.py" beforeDir="false" />
+     </list>
+     <option name="SHOW_DIALOG" value="false" />
+     <option name="HIGHLIGHT_CONFLICTS" value="true" />
+@@ -90,8 +85,10 @@
+       <option name="ENV_FILES" value="" />
+       <option name="INTERPRETER_OPTIONS" value="" />
+       <option name="PARENT_ENVS" value="true" />
++      <envs>
++        <env name="PYTHONUNBUFFERED" value="1" />
++      </envs>
+       <option name="SDK_HOME" value="" />
+-      <option name="SDK_NAME" value="MLSandbox" />
+       <option name="WORKING_DIRECTORY" value="C:\Users\randr\OneDrive\Bureau\POLYTECH 5A\S9\Apprentissage Profond\Partie 3\Projet\CharacterDetection" />
+       <option name="IS_MODULE_SDK" value="false" />
+       <option name="ADD_CONTENT_ROOTS" value="true" />
+@@ -138,7 +135,6 @@
+         <env name="PYTHONUNBUFFERED" value="1" />
+       </envs>
+       <option name="SDK_HOME" value="" />
+-      <option name="SDK_NAME" value="MLSandbox" />
+       <option name="WORKING_DIRECTORY" value="C:\Users\randr\OneDrive\Bureau\POLYTECH 5A\S9\Apprentissage Profond\Partie 3\Projet\CharacterDetection" />
+       <option name="IS_MODULE_SDK" value="false" />
+       <option name="ADD_CONTENT_ROOTS" value="true" />
+@@ -158,8 +154,10 @@
+       <option name="ENV_FILES" value="" />
+       <option name="INTERPRETER_OPTIONS" value="" />
+       <option name="PARENT_ENVS" value="true" />
++      <envs>
++        <env name="PYTHONUNBUFFERED" value="1" />
++      </envs>
+       <option name="SDK_HOME" value="" />
+-      <option name="SDK_NAME" value="MLSandbox" />
+       <option name="WORKING_DIRECTORY" value="C:\Users\randr\OneDrive\Bureau\POLYTECH 5A\S9\Apprentissage Profond\Partie 3\Projet\CharacterDetection" />
+       <option name="IS_MODULE_SDK" value="false" />
+       <option name="ADD_CONTENT_ROOTS" value="true" />
+@@ -183,7 +181,6 @@
+         <env name="PYTHONUNBUFFERED" value="1" />
+       </envs>
+       <option name="SDK_HOME" value="" />
+-      <option name="SDK_NAME" value="MLSandbox" />
+       <option name="WORKING_DIRECTORY" value="C:\Users\randr\OneDrive\Bureau\POLYTECH 5A\S9\Apprentissage Profond\Partie 3\Projet\CharacterDetection" />
+       <option name="IS_MODULE_SDK" value="false" />
+       <option name="ADD_CONTENT_ROOTS" value="true" />
+Index: .idea/misc.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<project version=\"4\">\r\n  <component name=\"Black\">\r\n    <option name=\"sdkName\" value=\"C:\\Users\\randr\\miniconda3\" />\r\n  </component>\r\n  <component name=\"ProjectRootManager\" version=\"2\" project-jdk-name=\"C:\\Users\\randr\\miniconda3\" project-jdk-type=\"Python SDK\" />\r\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/misc.xml b/.idea/misc.xml
+--- a/.idea/misc.xml	(revision fb54cbb63defbfb41960f1e081a1c13709321398)
++++ b/.idea/misc.xml	(date 1733910907299)
+@@ -3,5 +3,5 @@
+   <component name="Black">
+     <option name="sdkName" value="C:\Users\randr\miniconda3" />
+   </component>
+-  <component name="ProjectRootManager" version="2" project-jdk-name="C:\Users\randr\miniconda3" project-jdk-type="Python SDK" />
++  <component name="ProjectRootManager" version="2" project-jdk-name="tpdeeprl2024" project-jdk-type="Python SDK" />
+ </project>
+\ No newline at end of file
+Index: notebook.ipynb
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/notebook.ipynb b/notebook.ipynb
+--- a/notebook.ipynb	(revision fb54cbb63defbfb41960f1e081a1c13709321398)
++++ b/notebook.ipynb	(date 1733915325558)
+@@ -34,9 +34,8 @@
+   },
+   {
+    "metadata": {
+-    "ExecuteTime": {
+-     "end_time": "2024-12-08T14:39:46.673518Z",
+-     "start_time": "2024-12-08T14:39:44.681009Z"
++    "jupyter": {
++     "is_executing": true
+     }
+    },
+    "cell_type": "code",
+@@ -50,13 +49,12 @@
+    ],
+    "id": "fbc121e30a2defb3",
+    "outputs": [],
+-   "execution_count": 1
++   "execution_count": null
+   },
+   {
+    "metadata": {
+-    "ExecuteTime": {
+-     "end_time": "2024-12-08T14:39:48.055262Z",
+-     "start_time": "2024-12-08T14:39:47.919072Z"
++    "jupyter": {
++     "is_executing": true
+     }
+    },
+    "cell_type": "code",
+@@ -66,7 +64,7 @@
+    ],
+    "id": "ccc0975f6cba74de",
+    "outputs": [],
+-   "execution_count": 2
++   "execution_count": null
+   },
+   {
+    "metadata": {
+@@ -133,9 +131,8 @@
+   },
+   {
+    "metadata": {
+-    "ExecuteTime": {
+-     "end_time": "2024-12-08T14:39:48.700681Z",
+-     "start_time": "2024-12-08T14:39:48.689142Z"
++    "jupyter": {
++     "is_executing": true
+     }
+    },
+    "cell_type": "code",
+@@ -145,7 +142,7 @@
+    ],
+    "id": "ff1d94159e05f1b4",
+    "outputs": [],
+-   "execution_count": 5
++   "execution_count": null
+   },
+   {
+    "metadata": {
