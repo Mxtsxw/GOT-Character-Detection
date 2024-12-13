@@ -4,17 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="91d986e8-5637-4d6f-9b9f-2011337a6b3d" name="Changes" comment="Face recognition : Stage 1">
-      <change beforePath="$PROJECT_DIR$/.idea/CharacterDetection.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/CharacterDetection.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/jupyter-settings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/jupyter-settings.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+    <list default="true" id="91d986e8-5637-4d6f-9b9f-2011337a6b3d" name="Changes" comment="Face recognition : Stage 2 (add)">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/YuNet_video_processing.py" beforeDir="false" afterPath="$PROJECT_DIR$/YuNet_video_processing.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/Johnny English.jpg" beforeDir="false" afterPath="$PROJECT_DIR$/data/Johnny English/Johnny English.jpg" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/embeddings/face_embeddings.pkl" beforeDir="false" afterPath="$PROJECT_DIR$/embeddings/face_embeddings_unique.pkl" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/notebook.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/notebook.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -84,15 +77,12 @@
       <recent name="C:\Users\randr\OneDrive\Bureau\POLYTECH 5A\S9\Apprentissage Profond\Partie 3\Projet\CharacterDetection" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.utils">
+  <component name="RunManager" selected="Python.YuNet">
     <configuration name="YuNet" type="PythonConfigurationType" factoryName="Python">
       <module name="CharacterDetection" />
       <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
       <option name="SDK_HOME" value="" />
       <option name="SDK_NAME" value="MLSandbox" />
       <option name="WORKING_DIRECTORY" value="C:\Users\randr\OneDrive\Bureau\POLYTECH 5A\S9\Apprentissage Profond\Partie 3\Projet\CharacterDetection" />
@@ -161,6 +151,9 @@
       <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
       <option name="SDK_HOME" value="" />
       <option name="SDK_NAME" value="MLSandbox" />
       <option name="WORKING_DIRECTORY" value="C:\Users\randr\OneDrive\Bureau\POLYTECH 5A\S9\Apprentissage Profond\Partie 3\Projet\CharacterDetection" />
@@ -242,7 +235,8 @@
       <workItem from="1733909685538" duration="3056000" />
       <workItem from="1734033160496" duration="367000" />
       <workItem from="1734033559122" duration="126000" />
-      <workItem from="1734033713734" duration="4805000" />
+      <workItem from="1734033713734" duration="5127000" />
+      <workItem from="1734099524490" duration="6851000" />
     </task>
     <task id="LOCAL-00001" summary="WIP">
       <option name="closed" value="true" />
@@ -268,7 +262,23 @@
       <option name="project" value="LOCAL" />
       <updated>1731666824368</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="Face recognition : Stage 2">
+      <option name="closed" value="true" />
+      <created>1734039167471</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1734039167471</updated>
+    </task>
+    <task id="LOCAL-00005" summary="Face recognition : Stage 2 (add)">
+      <option name="closed" value="true" />
+      <created>1734039265967</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1734039265967</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -278,6 +288,8 @@
     <MESSAGE value="WIP" />
     <MESSAGE value="YuNet WIP" />
     <MESSAGE value="Face recognition : Stage 1" />
-    <option name="LAST_COMMIT_MESSAGE" value="Face recognition : Stage 1" />
+    <MESSAGE value="Face recognition : Stage 2" />
+    <MESSAGE value="Face recognition : Stage 2 (add)" />
+    <option name="LAST_COMMIT_MESSAGE" value="Face recognition : Stage 2 (add)" />
   </component>
 </project>
