@@ -1,0 +1,38 @@
+Index: .idea/CharacterDetection.iml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<module type=\"PYTHON_MODULE\" version=\"4\">\r\n  <component name=\"NewModuleRootManager\">\r\n    <content url=\"file://$MODULE_DIR$\">\r\n      <excludeFolder url=\"file://$MODULE_DIR$/models\" />\r\n    </content>\r\n    <orderEntry type=\"inheritedJdk\" />\r\n    <orderEntry type=\"sourceFolder\" forTests=\"false\" />\r\n  </component>\r\n</module>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/CharacterDetection.iml b/.idea/CharacterDetection.iml
+--- a/.idea/CharacterDetection.iml	(revision fbd11def6dd06048ce23e9485b7f7db1c9d479ba)
++++ b/.idea/CharacterDetection.iml	(date 1733910528885)
+@@ -4,7 +4,7 @@
+     <content url="file://$MODULE_DIR$">
+       <excludeFolder url="file://$MODULE_DIR$/models" />
+     </content>
+-    <orderEntry type="inheritedJdk" />
++    <orderEntry type="jdk" jdkName="tpdeeprl2024" jdkType="Python SDK" />
+     <orderEntry type="sourceFolder" forTests="false" />
+   </component>
+ </module>
+\ No newline at end of file
+Index: .idea/misc.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<project version=\"4\">\r\n  <component name=\"Black\">\r\n    <option name=\"sdkName\" value=\"C:\\Users\\randr\\miniconda3\" />\r\n  </component>\r\n  <component name=\"ProjectRootManager\" version=\"2\" project-jdk-name=\"C:\\Users\\randr\\miniconda3\" project-jdk-type=\"Python SDK\" />\r\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/misc.xml b/.idea/misc.xml
+--- a/.idea/misc.xml	(revision fbd11def6dd06048ce23e9485b7f7db1c9d479ba)
++++ b/.idea/misc.xml	(date 1733910528896)
+@@ -3,5 +3,5 @@
+   <component name="Black">
+     <option name="sdkName" value="C:\Users\randr\miniconda3" />
+   </component>
+-  <component name="ProjectRootManager" version="2" project-jdk-name="C:\Users\randr\miniconda3" project-jdk-type="Python SDK" />
++  <component name="ProjectRootManager" version="2" project-jdk-name="tpdeeprl2024" project-jdk-type="Python SDK" />
+ </project>
+\ No newline at end of file
